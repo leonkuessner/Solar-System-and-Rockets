@@ -1,0 +1,103 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from matplotlib.animation import FuncAnimation
+
+AU = 149597870700
+P = 5
+
+df = pd.read_csv("Wincoll_prog_chall_1/data2.csv")
+
+df["b"] = df["a"]*(1-df["Epsilon"]**2)
+
+
+def position(theta, a, eps):
+    r = a*(1-eps**2)/(1-eps*np.cos(theta))
+    x = r*np.cos(theta)
+    y = r*np.sin(theta)
+
+    return r, x, y
+
+
+num_to_color = {
+    1: "orange",
+    2: "pink",
+    3: "green",
+    4: "red",
+    5: "brown",
+    6: "yellow",
+    7: "blue",
+    8: "purple",
+    9: "grey",
+}
+
+starting_planet = 1
+planet_count = 5
+
+if (planet_count < 6):
+    anim_speed = 2.125
+else:
+    anim_speed = 50
+
+
+def animate(i):
+    dataX = []
+    dataY = []
+
+    years = round(1000*i*anim_speed/360)/1000
+
+    for j in range(starting_planet, planet_count):
+        theta = (i*anim_speed*np.pi)/(df["P"][j]*180)
+        # theta = i*1/df["P"][j]*np.pi/180
+        r = df["a"][j]*(1-df["Epsilon"][j]**2) / \
+            (1-df["Epsilon"][j]*np.cos(theta))
+        x = r*np.cos(theta)
+        y = r*np.sin(theta)
+        dataX.append(x)
+        dataY.append(y)
+        # planet.set_color(num_to_color[j])
+    planet.set_data(dataX, dataY)
+    title.set_text(u"Years: {}".format(years))
+    return planet, title,
+
+
+plt.style.use('dark_background')
+fig, ax = plt.subplots(figsize=(10, 10))
+# planet, = ax.plot([], [], '.')
+
+
+if planet_count > 5:
+    ax.plot(0, 0, 'X', markersize=5, color="yellow")
+else:
+    ax.plot(0, 0, 'X', markersize=15, color="yellow")
+
+
+planet, = ax.plot([], [], '.', markersize=11)
+
+
+title = ax.text(0.07, 0.96, "", bbox={'facecolor': 'w', 'alpha': 0.2, 'pad': 5},
+                transform=ax.transAxes, ha="center")
+
+
+dataX = []
+dataY = []
+
+for j in range(starting_planet, planet_count):
+    theta = np.linspace(0, 2*math.pi, 1000)
+    r, x, y = position(theta, df["a"][j], df["Epsilon"][j])
+    ax.plot(x, y, color=num_to_color[j], linewidth=2, label=df["Object"][j])
+
+    # planet.set_color(num_to_color[j])
+    dataX.append(x[0])
+    dataY.append(y[0])
+animation = FuncAnimation(fig, animate, interval=1, blit=True)
+
+
+planet.set_data(dataX, dataY)
+
+plt.xlabel("x", size=20)
+plt.ylabel("y", size=20)
+plt.legend(fontsize=12, loc="upper right", numpoints=1)
+plt.grid(True, lw=0.3)
+plt.show()
