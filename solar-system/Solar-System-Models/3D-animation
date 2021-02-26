@@ -1,0 +1,114 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.animation import FuncAnimation
+
+df = pd.read_csv("Wincoll_prog_chall_1/data2.csv")
+df["b"] = df["a"]*(1-df["Epsilon"]**2)
+
+starting_planet = 1
+planet_count = 5
+
+num_to_color = {
+    1: "orange",
+    2: "pink",
+    3: "green",
+    4: "red",
+    5: "brown",
+    6: "yellow",
+    7: "cyan",
+    8: "blue",
+    9: "brown",
+}
+
+if (planet_count < 6):
+    anim_speed = 2.125
+else:
+    anim_speed = 60
+
+
+def position(theta, a, eps, beta):
+    beta = beta*np.pi/180
+    r = a*(1-eps**2)/(1-eps*np.cos(theta))
+    x = r*np.cos(theta)
+    xx = x*np.cos(beta)
+    yy = r*np.sin(theta)
+    zz = x*np.sin(beta)
+
+    data = np.array([xx[0], yy[0], zz[0]]).T
+
+    return xx, yy, zz, data
+
+
+def animate(i):
+    dataX = []
+    dataY = []
+    dataZ = []
+
+    years = round(100*i*anim_speed/360)/100
+    for j in range(starting_planet, planet_count):
+        beta = df["Beta"][j]*np.pi/180
+        theta = (i*anim_speed*np.pi)/(df["P"][j]*180)
+        r = df["a"][j]*(1-df["Epsilon"][j]**2) / \
+            (1-df["Epsilon"][j]*np.cos(theta))
+        x = r*np.cos(theta)
+        xx = x*np.cos(beta)
+        yy = r*np.sin(theta)
+        zz = x*np.sin(beta)
+        dataX.append(xx)
+        dataY.append(yy)
+        dataZ.append(zz)
+
+    data = np.array([dataX, dataY, dataZ]).T
+    planets, = ax.plot(data[0:, 0], data[0:, 1], data[0:, 2], '.', c='w')
+    title.set_text(u"Time: {} years".format(years))
+
+    return planets, title,
+
+
+plt.style.use('dark_background')
+fig = plt.figure(figsize=(10, 10))
+ax = fig.gca(projection='3d')
+
+# planet_data = np.empty([0, 3])
+
+
+plt.plot(0, 0, 'X', markersize=5, color="yellow")
+
+for j in range(starting_planet, planet_count):
+    theta = np.linspace(0, 2*np.pi, 1000)
+    xx, yy, zz, data = position(
+        theta, df["a"][j], df["Epsilon"][j], df["Beta"][j])
+    # planet_data = np.append(planet_data, [data], axis=0)
+    ax.plot3D(xx, yy, zz, c=num_to_color[j], label=df["Object"][j], zorder=-j)
+
+title = ax.text2D(0.05, 0.95, "", transform=ax.transAxes)
+
+
+animation = FuncAnimation(fig, animate, interval=1, blit=True)
+
+
+max_range = np.array([xx.max()-xx.min(), yy.max() -
+                      yy.min(), zz.max()-zz.min()]).max() / 2.0
+mid_x = (xx.max()+xx.min()) * 0.5
+mid_y = (yy.max()+yy.min()) * 0.5
+mid_z = (zz.max()+zz.min()) * 0.5
+ax.set_xlim((mid_x - max_range)*1.2, (mid_x + max_range)*1.2)
+ax.set_ylim((mid_y - max_range)*1.2, (mid_y + max_range)*1.2)
+ax.set_zlim((mid_z - max_range)*1.2, (mid_z + max_range)*1.2)
+
+ax.xaxis.pane.fill = False
+ax.yaxis.pane.fill = False
+ax.zaxis.pane.fill = False
+ax.xaxis._axinfo["grid"]['color'] = (1, 1, 1, 0.3)
+ax.yaxis._axinfo["grid"]['color'] = (1, 1, 1, 0.3)
+ax.zaxis._axinfo["grid"]['color'] = (1, 1, 1, 0.3)
+
+ax.grid(True, lw=0.1)
+
+ax.legend(fontsize=12, loc="upper right", numpoints=1)
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+plt.show()
