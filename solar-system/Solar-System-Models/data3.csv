@@ -1,0 +1,13 @@
+﻿object,type,primaryObject,mass,semiMajorAxis,ecc,radius,P_rot,P_orb,orbitalInclination,thetaInit
+Sun,star,,332837,,,109.123,,,,
+Mercury,innerPlanet,sun,0.055,0.387,0.21,0.383,58.646,0.241,7,
+Venus,innerPlanet,sun,0.815,0.723,0.01,0.949,243.018,0.615,3.39,
+Earth,innerPlanet,sun,1,1,0.02,1,0.997,1,0,
+Mars,innerPlanet,sun,0.107,1.523,0.09,0.533,1.026,1.881,1.85,
+Jupiter,outerPlanet,sun,317.85,5.202,0.05,11.209,0.413,11.861,1.31,
+Saturn,outerPlanet,sun,95.159,9.576,0.06,9.449,0.444,29.628,2.49,
+Uranus,outerPlanet,sun,14.5,19.293,0.05,4.007,0.718,84.747,0.77,
+Neptune,outerPlanet,sun,17.204,30.246,0.01,3.883,0.671,166.344,1.77,
+Pluto,dwarfPlanet,sun,0.003,39.509,0.2488,0.187,6.387,248.348,17.5,
+Comet Encke,comet,sun,,2.2175,0.8471,,,3.299,11.76,
+Halley's Comet,comet,sun,,17.8,0.97,,,75.32,162.26,
